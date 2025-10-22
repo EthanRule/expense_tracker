@@ -1,17 +1,69 @@
-// add expense (description, amount)
+import { ExpenseTracker } from "./expense_tracker/expense_tracker";
 
-// update expense
+const expenseTracker = new ExpenseTracker();
 
-// delete expense
+function parseInput(data: string): [string[], number] {
+	const argv: string[] = [];
+	let word = "";
+	for (let i = 0; i < data.length; i++) {
+		if (data[i] == " " && word.length > 0) {
+			argv.push(word);
+			word = "";
+		} else if (data[i] !== " " && data[i] !== "\n") {
+			word += data[i];
+		}
+	}
 
-// view all expenses
+	if (word.length > 0) {
+		argv.push(word);
+	}
 
-// view summary of all expenses
+	return [argv, argv.length];
+}
 
-// view expenses for a specific month (of current year)
+function input(): void {
+	process.stdout.write("expense-tracker: ");
+	process.stdin.once("data", (data) => {
+		let [argv, argc] = parseInput(data.toString());
+		console.log(`argv: ${argv}, argc: ${argc}`);
 
-// Add expense category and allow users to filter by category
+		switch (argv[0]) {
+			case "add":
+				expenseTracker.add("")
+				for (let i = 1; i < 8; i += 2) {
+					switch (argv[i]) {
+						case "--description":
 
-// Allow users to set a budget for each month and show a warning when they exceed the budget
+							break;
+						case "--category":
+							break;
+						case "--amount":
+							break;
+						case "--month":
+							break;
+						default:
+							console.log(
+								`Invalid expense attribute: ${argv[i]}. Expected: --description, --category, --amount, or --month`
+							);
+					}
+				}
+				break;
+			case "update":
+				break;
+			case "delete":
+				break;
+			case "view":
+				break;
+			case "set-budget":
+				break;
+		}
 
-// Allow users to export their expenses to csv
+		input();
+	});
+}
+
+function main(): void {
+	input();
+}
+
+main();

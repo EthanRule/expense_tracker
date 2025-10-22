@@ -3,6 +3,7 @@ export enum Category {
 	rent = "rent",
 	clothes = "clothes",
 	disposable = "disposable",
+	undefined = "undefined",
 }
 
 export enum Month {
@@ -18,13 +19,14 @@ export enum Month {
 	October = "October",
 	November = "November",
 	December = "December",
+	Undefined = "undefined",
 }
 
 export interface Expense {
-	description: string;
-	category: Category;
-	amount: number;
-	month: Month;
+	description?: string;
+	category?: Category;
+	amount?: number;
+	month?: Month;
 }
 
 export class ExpenseTracker {
@@ -33,7 +35,8 @@ export class ExpenseTracker {
 
 	constructor() {}
 
-	add(description: string, category: Category, amount: number, month: Month) {
+	// TODO: next add defaults? or deny adding an empty expense
+	add(description: string = "", category: Category, amount: number, month: Month): number {
 		const expense: Expense = {
 			description: description,
 			category: category,
@@ -42,6 +45,7 @@ export class ExpenseTracker {
 		};
 		const id = this.getId();
 		this.expenses.set(id, expense);
+		return id;
 	}
 
 	updateDescription(id: number, description: string) {
@@ -85,9 +89,15 @@ export class ExpenseTracker {
 
 	viewExpenseSummary() {
 		console.log(`Expenses Summary:`);
-		let totalExpenses = Array.from(this.expenses.values()).reduce((sum, expense) => sum + expense.amount, 0);
-		let greatestExpense = Array.from(this.expenses.values()).reduce((max, expense) => Math.max(max, expense.amount), 0); // Note that these would need future input validation checks
-		let minimumExpense = Array.from(this.expenses.values()).reduce((min, expense) => Math.min(min, expense.amount), 0);
+		let totalExpenses = Array.from(this.expenses.values()).reduce((sum, expense) => sum + (expense.amount ?? 0), 0);
+		let greatestExpense = Array.from(this.expenses.values()).reduce(
+			(max, expense) => Math.max(max, expense.amount ?? 0),
+			0
+		); // Note that these would need future input validation checks
+		let minimumExpense = Array.from(this.expenses.values()).reduce(
+			(min, expense) => Math.min(min, expense.amount ?? 0),
+			0
+		);
 		let averageExpense = totalExpenses / this.expenses.size;
 
 		console.log(
@@ -100,7 +110,7 @@ export class ExpenseTracker {
 		console.log(
 			`${Array.from(this.expenses.values())
 				.filter((expense) => expense.month === month)
-				.reduce((total, expense) => (total += expense.amount), 0)}`
+				.reduce((total, expense) => (total += expense.amount ?? 0), 0)}`
 		);
 	}
 
@@ -109,7 +119,7 @@ export class ExpenseTracker {
 		console.log(
 			`${Array.from(this.expenses.values())
 				.filter((expense) => expense.category === category)
-				.reduce((total, expense) => (total += expense.amount), 0)}`
+				.reduce((total, expense) => (total += expense.amount ?? 0), 0)}`
 		);
 	}
 
