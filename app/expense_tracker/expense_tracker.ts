@@ -20,34 +20,125 @@ export enum Month {
 	December = "December",
 }
 
-interface Expense {
+export interface Expense {
 	description: string;
 	category: Category;
 	amount: number;
+	month: Month;
 }
 
 export class ExpenseTracker {
 	private expenses: Map<number, Expense> = new Map();
+	private monthBudgets: Map<Month, number> = new Map();
 
 	constructor() {}
 
-	add(description: string, category: Category, amount: number) {}
-
-	update(id: number, description: string, category: Category, amount: number) {
-		//TODO: add default vals for args
+	add(description: string, category: Category, amount: number, month: Month) {
+		const expense: Expense = {
+			description: description,
+			category: category,
+			amount: amount,
+			month: month,
+		};
+		const id = this.getId();
+		this.expenses.set(id, expense);
 	}
 
-	delete(id: number) {}
+	updateDescription(id: number, description: string) {
+		const expense = this.expenses.get(id);
+		if (expense) {
+			expense.description = description;
+		}
+	}
 
-	viewExpenses() {}
+	updateCategory(id: number, category: Category) {
+		const expense = this.expenses.get(id);
+		if (expense) {
+			expense.category = category;
+		}
+	}
 
-	viewExpenseSummary() {}
+	updateAmount(id: number, amount: number) {
+		const expense = this.expenses.get(id);
+		if (expense) {
+			expense.amount = amount;
+		}
+	}
 
-	viewExpensesByMonth(month: Month) {}
+	updateMonth(id: number, month: Month) {
+		const expense = this.expenses.get(id);
+		if (expense) {
+			expense.month = month;
+		}
+	}
 
-	viewExpensesByCategory(category: Category) {}
+	delete(id: number) {
+		this.expenses.delete(id);
+	}
 
-	setBudget(month: Month) {}
+	viewExpenses() {
+		console.log(`Expenses:`);
+		for (const key of this.expenses.keys()) {
+			console.log(this.expenses.get(key));
+		}
+	}
 
-	exportExpenses() {}
+	viewExpenseSummary() {
+		console.log(`Expenses Summary:`);
+		let totalExpenses = Array.from(this.expenses.values()).reduce((sum, expense) => sum + expense.amount, 0);
+		let greatestExpense = Array.from(this.expenses.values()).reduce((max, expense) => Math.max(max, expense.amount), 0); // Note that these would need future input validation checks
+		let minimumExpense = Array.from(this.expenses.values()).reduce((min, expense) => Math.min(min, expense.amount), 0);
+		let averageExpense = totalExpenses / this.expenses.size;
+
+		console.log(
+			`Total Expenses: ${totalExpenses}, Greatest Expense: ${greatestExpense}, Minimum Expense: ${minimumExpense}, Average Expense: ${averageExpense}`
+		);
+	}
+
+	viewExpensesByMonth(month: Month) {
+		console.log(`Expenses By Month: ${month}`);
+		console.log(
+			`${Array.from(this.expenses.values())
+				.filter((expense) => expense.month === month)
+				.reduce((total, expense) => (total += expense.amount), 0)}`
+		);
+	}
+
+	viewExpensesByCategory(category: Category) {
+		console.log(`Expenses By Month: ${category}`);
+		console.log(
+			`${Array.from(this.expenses.values())
+				.filter((expense) => expense.category === category)
+				.reduce((total, expense) => (total += expense.amount), 0)}`
+		);
+	}
+
+	setBudget(month: Month, budget: number) {
+		this.monthBudgets.set(month, budget);
+	}
+
+	exportExpenses() {
+		//TODO:
+	}
+
+	clear() {
+		this.expenses.clear();
+	}
+
+	getExpenses(): Map<number, Expense> {
+		return this.expenses;
+	}
+
+	getBudget(month: Month): number | undefined {
+		return this.monthBudgets.get(month);
+	}
+
+	getId(): number {
+		let maxId = 0;
+		for (const key of this.expenses.keys()) {
+			maxId = Math.max(maxId, key);
+		}
+
+		return maxId + 1;
+	}
 }
