@@ -47,12 +47,11 @@ function input(): void {
 	process.stdout.write("expense-tracker: ");
 	process.stdin.once("data", (data) => {
 		let [argv, argc] = parseInput(data.toString());
-		console.log(`argv: ${argv}, argc: ${argc}`);
 
 		switch (argv[0]) {
 			case "add":
 				const expenseId = expenseTracker.add();
-				for (let i = 1; i < 8; i += 2) {
+				for (let i = 1; i < 8 && i < argv.length - 1; i += 2) {
 					switch (argv[i]) {
 						case "--description":
 							expenseTracker.updateDescription(expenseId, argv[i + 1]);
@@ -61,15 +60,21 @@ function input(): void {
 							const category = categoryMap[argv[i + 1]];
 							if (category) {
 								expenseTracker.updateCategory(expenseId, category);
+							} else {
+								console.log("Invalid category.");
 							}
 							break;
 						case "--amount":
-							expenseTracker.updateAmount(expenseId, Number(argv[i + 1]));
+							if (typeof Number(argv[i + 1]) === "number" && Number(argv[i + 1]) > 0) {
+								expenseTracker.updateAmount(expenseId, Number(argv[i + 1]));
+							}
 							break;
 						case "--month":
 							const month = monthMap[argv[i + 1]];
 							if (month) {
 								expenseTracker.updateMonth(expenseId, month);
+							} else {
+								console.log("invalid month");
 							}
 							break;
 						default:
@@ -87,17 +92,22 @@ function input(): void {
 						break;
 					case "--category":
 						expenseTracker.updateCategory(Number(updateExpenseId), categoryMap[argv[3]]);
+						if (!categoryMap[argv[3]]) {
+							console.log("invalid category");
+						}
 						break;
 					case "--amount":
 						expenseTracker.updateAmount(Number(updateExpenseId), Number(argv[3]));
 						break;
-					case "--month":
+					case "--month": // update 1 --description "new description"
 						expenseTracker.updateMonth(Number(updateExpenseId), monthMap[argv[3]]);
+						if (!monthMap[argv[3]]) {
+							console.log("invalid month");
+						}
 						break;
 				}
 				break;
 			case "delete":
-				let deleteExpenseId = argv[1];
 				expenseTracker.delete(Number(argv[1]));
 				break;
 			case "list":
@@ -120,6 +130,11 @@ function input(): void {
 			case "set-budget":
 				expenseTracker.setBudget(monthMap[argv[1]], Number(argv[2]));
 				break;
+			case "export":
+				expenseTracker.exportExpenses();
+				break;
+			default:
+				console.log("invalid command");
 		}
 
 		input();

@@ -1,3 +1,5 @@
+import * as fs from "fs";
+
 export enum Category {
 	food = "food",
 	rent = "rent",
@@ -35,8 +37,12 @@ export class ExpenseTracker {
 
 	constructor() {}
 
-	// TODO: next add defaults? or deny adding an empty expense
-	add(description: string = "", category: Category = Category.undefined, amount: number = 0, month: Month = Month.Undefined): number {
+	add(
+		description: string = "",
+		category: Category = Category.undefined,
+		amount: number = 0,
+		month: Month = Month.Undefined
+	): number {
 		const expense: Expense = {
 			description: description,
 			category: category,
@@ -45,6 +51,7 @@ export class ExpenseTracker {
 		};
 		const id = this.getId();
 		this.expenses.set(id, expense);
+		console.log(`Expense added successfully (ID: ${id})`);
 		return id;
 	}
 
@@ -81,9 +88,13 @@ export class ExpenseTracker {
 	}
 
 	viewExpenses() {
-		console.log(`Expenses:`);
+		console.log(`ID Date Description Category Amount`);
 		for (const key of this.expenses.keys()) {
-			console.log(this.expenses.get(key));
+			console.log(
+				`${key} ${this.expenses.get(key)?.month} ${this.expenses.get(key)?.description} ${
+					this.expenses.get(key)?.category
+				} ${this.expenses.get(key)?.amount}`
+			);
 		}
 	}
 
@@ -128,7 +139,16 @@ export class ExpenseTracker {
 	}
 
 	exportExpenses() {
-		//TODO:
+		const headers = "ID, Description, Category, Amount, Month\n";
+		const rows = Array.from(this.expenses.entries())
+			.map(
+				([id, expense]) =>
+					`${id}, "${expense.description}", ${expense.category}, ${expense.amount}, ${expense.month}`
+			)
+			.join("\n");
+		const csvContent = headers + rows;
+		fs.writeFileSync("expenses.csv", csvContent);
+		console.log(`Exported to ${"expenses.csv"}`);
 	}
 
 	clear() {
