@@ -36,7 +36,7 @@ export class ExpenseTracker {
 	constructor() {}
 
 	// TODO: next add defaults? or deny adding an empty expense
-	add(description: string = "", category: Category, amount: number, month: Month): number {
+	add(description: string = "", category: Category = Category.undefined, amount: number = 0, month: Month = Month.Undefined): number {
 		const expense: Expense = {
 			description: description,
 			category: category,
