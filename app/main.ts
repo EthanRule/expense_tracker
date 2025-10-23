@@ -80,13 +80,45 @@ function input(): void {
 				}
 				break;
 			case "update": // update 1 --description "new description"
-				let expenseId = argv[1];
+				let updateExpenseId = argv[1];
+				switch (argv[2]) {
+					case "--description":
+						expenseTracker.updateDescription(Number(updateExpenseId), argv[3]);
+						break;
+					case "--category":
+						expenseTracker.updateCategory(Number(updateExpenseId), categoryMap[argv[3]]);
+						break;
+					case "--amount":
+						expenseTracker.updateAmount(Number(updateExpenseId), Number(argv[3]));
+						break;
+					case "--month":
+						expenseTracker.updateMonth(Number(updateExpenseId), monthMap[argv[3]]);
+						break;
+				}
 				break;
 			case "delete":
+				let deleteExpenseId = argv[1];
+				expenseTracker.delete(Number(argv[1]));
 				break;
-			case "view":
+			case "list":
+				expenseTracker.viewExpenses();
+				break;
+			case "summary":
+				if (argc > 1) {
+					switch (argv[1]) {
+						case "--month":
+							expenseTracker.viewExpensesByMonth(monthMap[argv[2]]);
+							break;
+						case "--category":
+							expenseTracker.viewExpensesByCategory(categoryMap[argv[2]]);
+							break;
+					}
+				} else {
+					expenseTracker.viewExpenseSummary();
+				}
 				break;
 			case "set-budget":
+				expenseTracker.setBudget(monthMap[argv[1]], Number(argv[2]));
 				break;
 		}
 
